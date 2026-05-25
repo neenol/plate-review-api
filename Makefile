@@ -1,8 +1,12 @@
 .PHONY: dev test build lint sqlc migrate-up migrate-down migrate-new
 
-GOOSE_DRIVER ?= postgres
-GOOSE_DBSTRING ?= $(DATABASE_URL)
-MIGRATIONS_DIR = internal/db/migrations
+GOOSE_DRIVER   ?= postgres
+MIGRATIONS_DIR  = internal/db/migrations
+
+# Read DATABASE_URL from .env (strip surrounding quotes) or from the environment.
+# This means `make migrate-up` works without sourcing .env first.
+_ENV_DB_URL := $(shell sed -n "s/^DATABASE_URL=['\"]\\?\\(.*[^'\"]\\)['\"]\\?$$/\\1/p" .env 2>/dev/null | head -1)
+GOOSE_DBSTRING ?= $(if $(DATABASE_URL),$(DATABASE_URL),$(_ENV_DB_URL))
 
 dev:
 	air
