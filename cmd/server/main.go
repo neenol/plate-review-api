@@ -7,6 +7,8 @@ import (
 	"net/http"
 	"os"
 
+	"github.com/joho/godotenv"
+
 	"github.com/nglambertjr/plate-review-api/internal/config"
 	"github.com/nglambertjr/plate-review-api/internal/server"
 )
@@ -20,6 +22,10 @@ func main() {
 
 func run() error {
 	slog.SetDefault(slog.New(slog.NewJSONHandler(os.Stdout, nil)))
+
+	// Load .env if present; silently ignored in production where env vars
+	// come from the platform (Fly.io secrets, etc.).
+	_ = godotenv.Load()
 
 	cfg, err := config.Load()
 	if err != nil {
